@@ -13,8 +13,8 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion';
+import Image from 'next/image';
 import { Check, MousePointer2 } from 'lucide-react';
-import { EditorialImage } from './EditorialImage';
 
 type Point = {
   x: number;
@@ -165,9 +165,13 @@ function pointInside(container: HTMLElement, target: HTMLElement): Point {
   const containerRect = container.getBoundingClientRect();
   const targetRect = target.getBoundingClientRect();
 
+  const rawX = targetRect.left - containerRect.left + targetRect.width / 2;
+  const rawY = targetRect.top - containerRect.top + targetRect.height / 2;
+  const edgePadding = 28;
+
   return {
-    x: targetRect.left - containerRect.left + targetRect.width / 2,
-    y: targetRect.top - containerRect.top + targetRect.height / 2,
+    x: Math.min(Math.max(rawX, edgePadding), Math.max(edgePadding, containerRect.width - edgePadding)),
+    y: Math.min(Math.max(rawY, edgePadding), Math.max(edgePadding, containerRect.height - edgePadding)),
   };
 }
 
@@ -207,13 +211,13 @@ export function BrowserDemo() {
   const cursorX = useTransform(
     scrollYProgress,
     [0, 0.12, 0.28, 0.37, 0.5, 0.69, 0.78, 1],
-    [42, 76, proPoint.x, proPoint.x, proPoint.x, completePoint.x, completePoint.x, completePoint.x]
+    [96, 130, proPoint.x, proPoint.x, proPoint.x, completePoint.x, completePoint.x, completePoint.x]
   );
 
   const cursorY = useTransform(
     scrollYProgress,
     [0, 0.12, 0.28, 0.37, 0.5, 0.69, 0.78, 1],
-    [78, 96, proPoint.y, proPoint.y, proPoint.y, completePoint.y, completePoint.y, completePoint.y]
+    [120, 150, proPoint.y, proPoint.y, proPoint.y, completePoint.y, completePoint.y, completePoint.y]
   );
 
   const cursorScale = useTransform(
@@ -335,34 +339,35 @@ export function BrowserDemo() {
                 A future neutral background image can replace this file without
                 changing plan cards, task states, cursor targets, or choreography.
               */}
-              <EditorialImage
-                src="/home_image/target_website_pricing_001.webp"
-                alt=""
-                sizes="100vw"
-                className="absolute inset-0 h-full w-full rounded-none opacity-[0.18]"
-                imageClassName="scale-[1.035] object-cover"
-                objectPosition="50% 48%"
-                overlay={false}
+              <div aria-hidden="true" className="absolute inset-0 z-0 overflow-hidden">
+                <Image
+                  src="/home_image/target_website_pricing_001.webp"
+                  alt=""
+                  fill
+                  sizes="100vw"
+                  className="scale-[1.035] object-cover opacity-[0.14]"
+                  style={{ objectPosition: '50% 48%' }}
+                />
+              </div>
+
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(248,245,238,.91),rgba(236,230,220,.94))]"
               />
 
               <div
                 aria-hidden="true"
-                className="absolute inset-0 bg-[radial-gradient(circle_at_38%_20%,rgba(255,255,255,.88),rgba(244,240,232,.72)_35%,rgba(232,226,216,.87)_72%,rgba(225,219,208,.94)_100%)]"
+                className="absolute -left-24 top-[13%] z-[2] h-64 w-64 rounded-full bg-[rgba(201,161,95,.12)] blur-3xl"
               />
 
               <div
                 aria-hidden="true"
-                className="absolute -left-24 top-[13%] h-64 w-64 rounded-full bg-[rgba(201,161,95,.12)] blur-3xl"
+                className="absolute bottom-[8%] right-[22%] z-[2] h-72 w-72 rounded-full bg-white/45 blur-3xl"
               />
 
               <div
                 aria-hidden="true"
-                className="absolute bottom-[8%] right-[22%] h-72 w-72 rounded-full bg-white/45 blur-3xl"
-              />
-
-              <div
-                aria-hidden="true"
-                className="relative z-[2] grid min-h-[716px] lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_360px]"
+                className="relative z-10 grid min-h-[716px] lg:h-full lg:min-h-0 lg:grid-cols-[minmax(0,1fr)_360px]"
               >
                 <div className="flex min-w-0 flex-col px-5 pb-6 pt-6 sm:px-7 sm:pb-7 sm:pt-7 md:px-9 md:pb-9 md:pt-9 lg:px-10 lg:pb-8 lg:pt-8 xl:px-12 xl:pt-10">
                   <div className="flex items-start justify-between gap-6">
@@ -376,7 +381,7 @@ export function BrowserDemo() {
                         <br className="hidden sm:block" /> the way you move.
                       </h3>
 
-                      <p className="mt-4 max-w-[520px] text-xs leading-5 text-black/45 sm:text-sm sm:leading-6 lg:text-base lg:leading-7">
+                      <p className="mt-4 max-w-[520px] text-xs leading-5 text-black/58 sm:text-sm sm:leading-6 lg:text-base lg:leading-7">
                         Compare three mobility setups across range, speed, and daily use. Select the plan that best fits the task.
                       </p>
                     </div>
@@ -413,7 +418,7 @@ export function BrowserDemo() {
                   </div>
                 </div>
 
-                <div className="hidden border-l border-black/8 bg-[rgba(255,255,255,.3)] px-8 py-10 backdrop-blur-[2px] lg:block">
+                <div className="hidden border-l border-black/10 bg-[rgba(255,255,255,.58)] px-8 py-10 backdrop-blur-[2px] lg:block">
                   <p className="text-[9px] font-semibold uppercase tracking-[0.15em] text-black/30">
                     PRODUCT SUPPORT
                   </p>
@@ -450,7 +455,7 @@ export function BrowserDemo() {
               <motion.aside
                 aria-hidden="true"
                 style={reduceMotion ? undefined : { x: panelX, opacity: panelOpacity }}
-                className="absolute bottom-4 left-4 right-4 z-20 overflow-hidden rounded-[1.2rem] border border-white/10 bg-[rgba(11,13,18,.91)] text-[var(--lab-bone)] shadow-[0_30px_80px_rgba(0,0,0,.34)] backdrop-blur-xl sm:left-auto sm:right-5 sm:top-5 sm:bottom-auto sm:w-[350px] lg:right-7 lg:top-7"
+                className="absolute bottom-4 left-4 right-4 z-30 overflow-hidden rounded-[1.2rem] border border-white/10 bg-[rgba(11,13,18,.91)] text-[var(--lab-bone)] shadow-[0_30px_80px_rgba(0,0,0,.34)] backdrop-blur-xl sm:left-auto sm:right-5 sm:top-5 sm:bottom-auto sm:w-[350px] lg:right-7 lg:top-7"
               >
                 <motion.div
                   style={reduceMotion ? { scaleX: 1 } : { scaleX: progressScale }}
@@ -549,7 +554,7 @@ export function BrowserDemo() {
                     scale: cursorScale,
                     opacity: cursorOpacity,
                   }}
-                  className="pointer-events-none absolute left-0 top-0 z-30 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-black/12 bg-[rgba(250,247,239,.94)] text-[var(--lab-graphite)] shadow-[0_8px_26px_rgba(0,0,0,.22)] backdrop-blur md:flex"
+                  className="pointer-events-none absolute left-0 top-0 z-40 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-black/12 bg-[rgba(250,247,239,.94)] text-[var(--lab-graphite)] shadow-[0_8px_26px_rgba(0,0,0,.22)] backdrop-blur md:flex"
                 >
                   <motion.span
                     style={{
